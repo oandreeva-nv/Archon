@@ -302,7 +302,7 @@ def generate_openai(model, messages, max_tokens=2048, temperature=0.7, **kwargs)
         else os.environ.get("OPENAI_API_KEY")
     )
 
-    client = openai.OpenAI(api_key=key)
+    client = openai.OpenAI(base_url="http://localhost:9000/v1", api_key=key)
 
     for sleep_time in [1, 2, 4, 8, 16, 32, 64]:
         try:
