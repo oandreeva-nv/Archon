@@ -20,12 +20,15 @@ def append_json(file_path: str) -> str:
     return file_path + ".json"
 
 
-from .power_ranker import PowerRanker, parse_model_name
+from power_ranker import PowerRanker, parse_model_name
+from benchmarks.benchmarks import BENCHMARK_CLASSES
 
 
 class ITAS:
     # TODO: Get this from the archon config
     MODEL_TO_API_DICT = {
+        "llama_1b": "OpenAI_API",
+        "llama_3B": "OpenAI_API",
         "gpt-3.5-turbo-0125": "OpenAI_API",
         "gpt-4-0314": "OpenAI_API",
         "gpt-4-1106-preview": "OpenAI_API",
@@ -92,29 +95,30 @@ class ITAS:
             for model in self.search_config["models_available"] + [
                 self.search_config["baseline_model"]
             ]:
+                m = model.split("/")[-1]
                 model_config = {
-                    "name": model,
-                    "model_power_ranking": [model],
+                    "name": m,
+                    "model_power_ranking": [m],
                     "model_top_k": 1,
                     "sample_top_k": 1,
                     "fuser_layer_1": 0,
                     "fuser_layer_2": 0,
                     "fuser_layer_3": 0,
-                    "final_fuser_model": model,
-                    "critic_model": model,
-                    "ranker_model": model,
+                    "final_fuser_model": m,
+                    "critic_model": m,
+                    "ranker_model": m,
                     "add_final_fuser": False,
                 }
 
                 save_path = append_json(
-                    os.path.join(self.search_config["answers_save_path"], model)
+                    os.path.join(self.search_config["answers_save_path"], m)
                 )  # Save the config to correct folder
                 self.create_archon_config(model_config, save_path=save_path)
                 print(
                     f"Created Archon config for {model}, saved to: {self.get_save_path(model_config)}"
                 )
 
-            if self.search_config["benchmark"] in ["mt_bench", "arena_hard_auto"]:
+            if self.search_config["benchmark"] in BENCHMARK_CLASSES:
                 ranker = PowerRanker(
                     benchmark_name=self.search_config["benchmark"],
                     judge_path=self.search_config["judge_model"],
@@ -147,7 +151,7 @@ class ITAS:
         return model_power_ranking
 
     def run_benchmark(self, archon_json, dataset_sample):
-        if self.search_config["benchmark"] in ["mt_bench", "arena_hard_auto"]:
+        if self.search_config["benchmark"] in BENCHMARK_CLASSES:
             # return get_benchmark_results(
             #     baseline_model=self.search_config["baseline_model"],
             #     model_list=[archon_json["name"]],
@@ -163,8 +167,9 @@ class ITAS:
                 baseline_path=self.search_config["baseline_model"],
                 model_list_paths=[archon_json["save_path"]],
                 output_dir=self.search_config["save_directory"],
+                dataset_sample=dataset_sample
             )
-            ranker.gen_model_answers(dataset_sample=dataset_sample)
+            ranker.gen_model_answers()
             return ranker.rank_models()
         else:
             raise ValueError("Invalid benchmark type!")
@@ -201,7 +206,8 @@ class ITAS:
                     "use_critiques": True
                 }
             ]
-
+        
+        
         # Proposer Layer
         archon_config["layers"].append(
             [
@@ -354,6 +360,8 @@ class ITAS:
             _, model_to_score_dict = self.run_benchmark(
                 archon_json, self.search_config["dataset_sample_for_search"]
             )
+
+            print(list(model_to_score_dict.values())[0])
 
             return list(model_to_score_dict.values())[0]
 
@@ -581,7 +589,9 @@ class ITAS:
         )
 
     def itas_algorithm(self):
+        print("perform_search")
         archon_save_path_to_score = self.perform_search()
+        print("done perform_search")
         top_10_archon_save_paths = sorted(
             archon_save_path_to_score.items(), key=lambda x: x[1]
         )[: self.search_config["number_of_archon_configs_for_final_ranking"]]
@@ -661,7 +671,7 @@ def main():
     general_model_config = {"temperature": 0.7, "max_tokens": 2048}
 
     # Initialize and run the itas algorithm
-    itas = itas(search_config=search_config, general_model_config=general_model_config)
+    itas = ITAS(search_config=search_config, general_model_config=general_model_config)
     itas.itas_algorithm()
 
 

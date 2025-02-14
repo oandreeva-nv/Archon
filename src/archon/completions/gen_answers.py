@@ -1,13 +1,13 @@
-from .archon import Archon
+from archon.completions.archon import Archon
 from loguru import logger
 from functools import partial
 import argparse
 import concurrent.futures
 from tqdm import tqdm
-from .utils import load_config
-from . import utils
+from archon.completions.utils import load_config
+from archon.completions import utils
 import os
-from ..benchmarks.benchmarks import BENCHMARK_CLASSES, load_benchmark
+from archon.benchmarks.benchmarks import BENCHMARK_CLASSES, load_benchmark
 import time
 
 
@@ -59,6 +59,7 @@ def main(args):
         debug_data=args.debug_data,
     )
     eval_set = benchmark.load_dataset()
+    print(eval_set)
 
     results = []
     # run Archon on eval questions in parallel

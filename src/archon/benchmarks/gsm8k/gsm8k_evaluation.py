@@ -11,7 +11,7 @@ def evaluate_pass(answers: list):
         correct = False
 
         ground_truth_answer = response_dict["answer"].split("####")[1].strip()
-        response_answer_section = response_dict["output"].split("The answer is:")[1].strip()
+        response_answer_section = response_dict["output"]
         if ground_truth_answer in response_answer_section:
             correct = True
         corrects.append(correct)

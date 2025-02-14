@@ -1,14 +1,19 @@
 import os
 import json
-from ..completions import Archon
-from ..completions.gen_answers import main as gen_answers_main
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent))
+
+from completions import Archon
+from completions.gen_answers import main as gen_answers_main
 from loguru import logger
 import argparse
 
-from ..benchmarks.mt_bench.eval_mt_bench import main as eval_mt_main
-from ..benchmarks.mt_bench.show_mt_bench_result import display_result_pairwise
-from ..benchmarks.arena_hard_auto.gen_judgment import generate_judgments, generate_pairwise_config
-from ..benchmarks.arena_hard_auto.show_arena_hard_auto_result import rank_model_performance
+from benchmarks.mt_bench.eval_mt_bench import main as eval_mt_main
+from benchmarks.mt_bench.show_mt_bench_result import display_result_pairwise
+from benchmarks.arena_hard_auto.gen_judgment import generate_judgments, generate_pairwise_config
+from benchmarks.arena_hard_auto.show_arena_hard_auto_result import rank_model_performance
+from benchmarks.gsm8k.gsm8k_evaluation import evaluate_gsm8k_answers
 
 # Needed for FastChat
 from dotenv import load_dotenv
@@ -23,7 +28,8 @@ def parse_model_name(model_path: str) -> str:
 
 QUESTION_MAP = {
     "arena_hard_auto": "archon/benchmarks/arena_hard_auto/arena_questions.jsonl",
-    "mt_bench": "archon/benchmarksmt_bench/FastChat/fastchat/llm_judge/data/mt_bench/question.jsonl",
+    "mt_bench": "archon/benchmarks/mt_bench/FastChat/fastchat/llm_judge/data/mt_bench/question.jsonl",
+    "gsm8k": "/mnt/Code/Archon/src/archon/benchmarks/gsm8k/grade-school-math/grade_school_math/data/test_short.jsonl"
 }
 
 
@@ -113,6 +119,7 @@ class PowerRanker:
                 "debug_unit_test_generator": False,
                 "samples": 1
             }
+            print(args_dict)
             args = argparse.Namespace(**args_dict)
             gen_answers_main(args)
 
@@ -134,6 +141,23 @@ class PowerRanker:
             judge_name=self.judge["name"],
             baseline=self.baseline["name"],
         )
+        return self.results, self.model_to_score_dict
+    
+    def compare_gsm8k(self) -> tuple[list[str], dict[str, float]]:
+        model_name_list = [model["name"] for model in self.eval_models]
+        self.model_to_score_dict = dict()
+
+        for model in model_name_list:
+            answer_path = self.output_dir + "/gsm8k/model_answer/" + model + ".json"
+            score = evaluate_gsm8k_answers(answer_path)["accuracy"]
+            # Make sure score is a float value
+            self.model_to_score_dict[model] = float(score)
+
+        # Sort by score value
+        self.results = sorted(self.model_to_score_dict.keys(), 
+                             key=lambda x: float(self.model_to_score_dict[x]),
+                             reverse=True)
+
         return self.results, self.model_to_score_dict
 
     def compare_against_mt(self):
@@ -177,6 +201,8 @@ class PowerRanker:
             return self.compare_against_mt()
         if self.benchmark["name"] == "arena_hard_auto":
             return self.compare_against_arena()
+        if self.benchmark["name"] == "gsm8k":
+            return self.compare_gsm8k()
         logger.error(f"{self.benchmark['name']} is not supported")
 
 
