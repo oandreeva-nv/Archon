@@ -9,7 +9,7 @@ import re
 import concurrent.futures
 from loguru import logger
 from tqdm import tqdm
-from ...completions import Archon
+from archon.completions import Archon
 from .arena_hard_auto_utils import (
     load_questions,
     chat_completion_archon as get_judgment_answer,

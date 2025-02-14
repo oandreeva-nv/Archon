@@ -4,7 +4,7 @@ import time
 import yaml
 import random
 import requests
-from ...completions import Archon
+from archon.completions import Archon
 from typing import List
 from glob import glob
 
