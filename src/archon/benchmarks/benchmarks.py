@@ -14,6 +14,7 @@ from .mix_eval.utils import (
 from .code_contests.utils import get_python_solutions
 import os
 import re
+from functools import partial
 
 
 
@@ -203,8 +204,7 @@ class ArenaHardAutoBenchmark(Benchmark):
                 output = model.generate(conv, temperature=temperature)
 
                 conv.append({"role": "assistant", "content": output})
-                turns.append(
-                    {
+                turns.append(                    {
                         "content": output,
                         "token_len": len(
                             encoding.encode(output, disallowed_special=())
@@ -446,7 +446,7 @@ class CodeContestsBenchmark(Benchmark):
         super().__init__(dataset_sample=dataset_sample, debug_data=debug_data)
         self.save_type = "yaml"
         self.num_few_shot = 1
-        self.limit = None
+        self.limit = 5
         self.offset = None
         self.stride = None
 
@@ -505,7 +505,7 @@ class CodeContestsBenchmark(Benchmark):
         print(f"Total number of items to process: {len(self.dataset)}")
         return self.dataset
 
-    def problem_to_prompt(self, problem, add_solution=True):
+    def problem_to_prompt(self, problem, add_solution=False):
         prompt = f"{CC_PROMPT}\n{problem['description']}\nA:"
         if add_solution:
             prompt += f" ```{problem['python_solutions'][0].strip()}```"
@@ -520,6 +520,8 @@ class CodeContestsBenchmark(Benchmark):
             ]
         )
         prompt += "\n" + self.problem_to_prompt(item, add_solution=False)
+        print(prompt)
+        print("--------------------------------")
         return prompt
 
     def get_test_cases(self, item):
@@ -543,7 +545,7 @@ class CodeContestsBenchmark(Benchmark):
         return timeout_seconds
 
     def get_answer(self, item, model, config, samples=1, **kwargs):
-        prompt = self.get_prompt(item)
+        prompt =self.problem_to_prompt(item)#self.get_prompt(item)
 
         if self.debug_data:
             logger.info(prompt)
@@ -555,7 +557,6 @@ class CodeContestsBenchmark(Benchmark):
         output = []
         for sample in range(samples):
             output.append(model.generate(messages))
-
         ans = {
             "prompt": prompt,
             "question": item["description"],
@@ -580,12 +581,13 @@ class CodeContestsBenchmark(Benchmark):
 
 
 class GSM8KBenchmark(Benchmark):
-    def __init__(self, dataset_sample=1.0, debug_data=False):
+    def __init__(self, dataset_sample=1.0, debug_data=False, data_location=None):
         super().__init__(dataset_sample=dataset_sample, debug_data=debug_data)
         self.dataset_sample = dataset_sample
         self.debug_data = debug_data
         self.dataset = None
         self.save_type = "json"
+        self.data_location = data_location
 
         self.prompt = "Answer the following mathematics question. Provide your reasoning by showing your work before your answer. "
         self.prompt += "At the end of your response, output your final answer in the format: 'The answer is: [answer]'. "
@@ -594,9 +596,25 @@ class GSM8KBenchmark(Benchmark):
 
     def load_dataset(self):
 
-        self.dataset = datasets.load_dataset("openai/gsm8k", "main")["test"]
+        if self.dataset is not None:
+            print("Dataset already loaded")
+            return self.dataset
+
+        if self.data_location is None:
+            print("Loading dataset from openai/gsm8k")
+            self.dataset = datasets.load_dataset("openai/gsm8k", "main")["test"]
+        else:
+            print("Loading dataset from file")
+            data = []
+            with open(self.data_location, 'r') as f:
+                for line in f:
+                    data.append(json.loads(line.strip()))
+            
+            # Create Dataset from list of dictionaries
+            self.dataset = datasets.Dataset.from_list(data)
+
         self.dataset = self.dataset.select(
-            range(int(len(self.dataset) * self.dataset_sample))
+            range(3)#range(int(len(self.dataset) * self.dataset_sample))
         )
 
         random.seed(0)
@@ -728,7 +746,7 @@ class MBPPBenchmark(Benchmark):
         self.temp_dir = temp_dir
         os.makedirs(temp_dir, exist_ok=True)
         self.save_type = "json"
-        problem_file = os.path.join("mbpp/data", f"mbpp.jsonl")
+        problem_file = os.path.join("archon/benchmarks/mbpp/data", f"mbpp_short.jsonl")
 
         self.examples = list(self.read_test_examples(problem_file))
         print("Read {} examples for evaluation over.".format(len(self.examples)))
@@ -748,14 +766,14 @@ class MBPPBenchmark(Benchmark):
 
         # test_cases
         examples_str = []
-        for i in range(1, 4):
+        for i in range(0, 1):
             ex = examples[i]
             q, test, code = ex["text"], ex["test_list"], ex["code"]
             ex_prompt = format_test_example(q, test, code)
             example_prompt = "- Example {}:\n{}".format(i, ex_prompt)
             examples_str += [example_prompt]
 
-        for i in range(10, 510):
+        for i in range(1, 6):
             ex = examples[i]
             q, test, code = ex["text"], ex["test_list"], ex["code"]
 
@@ -1028,7 +1046,7 @@ BENCHMARK_CLASSES = {
     "mix_eval": MixEvalBenchmark,
     "mix_eval_hard": MixEvalHardBenchmark,
     "code_contests": CodeContestsBenchmark,
-    "gsm8k": GSM8KBenchmark,
+    "gsm8k": partial(GSM8KBenchmark, data_location="/mnt/Code/Archon/src/archon/benchmarks/gsm8k/grade-school-math/grade_school_math/data/test.jsonl"),
     "human_eval": HumanEvalBenchmark,
     "mbpp": MBPPBenchmark,
     "math": MATHBenchmark,
