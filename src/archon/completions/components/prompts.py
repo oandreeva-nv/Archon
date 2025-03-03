@@ -38,7 +38,8 @@ def make_fuser_prompt(conv, references, critiques=None, length_control=False):
         prompt += "Responses from models:\n\n"
 
         count = 0
-        assert len(references) == len(critiques)
+        print(len(references), len(critiques))
+        assert len(references) == len(critiques), f"Lengths of references and critiques are not equal: {len(references)} != {len(critiques)}"
         for reference, critique in zip(references, critiques):
             prompt += f"{count+1}. {reference} \n\nCritique:\n{critique}"
             count += 1

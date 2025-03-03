@@ -1,4 +1,4 @@
-from ..utils import (
+from archon.completions.utils import (
     generate_together,
     generate_openai,
     generate_anthropic,
@@ -11,7 +11,7 @@ from ..utils import (
 )
 import loguru as logger
 
-from .Component import Component
+from archon.completions.components.Component import Component
 
 GENERATE_MAP = {
     "Together_API": generate_together,
@@ -40,10 +40,11 @@ class Generator(Component):
         """
         Initialize the model and tokenizer with the specified settings.
         """
+        print(self.config)
         self.model_name = self.config["model"]
         self.model_type = self.config["model_type"]
         self.temperature = self.config["temperature"]
-        self.max_tokens = self.config["max_tokens"]
+        self.max_tokens = self.config.get("max_tokens", 2048)
         self.samples = self.config.get("samples", 1)
         self.no_system = self.config.get("no_system", False)
 

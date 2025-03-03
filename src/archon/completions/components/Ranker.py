@@ -1,7 +1,7 @@
 from .Generator import Generator
 from .Component import Component
 import threading
-from .. import utils
+from archon.completions import utils
 from loguru import logger
 import re
 from .prompts import make_ranker_prompt

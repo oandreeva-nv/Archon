@@ -45,6 +45,7 @@ class Layer:
         """Initialize the layer and its components"""
 
         component_list = self.config
+        print(component_list)
 
         # deprecated compatibility with old configs
         if isinstance(self.config, dict):

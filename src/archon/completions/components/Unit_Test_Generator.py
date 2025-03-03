@@ -1,7 +1,7 @@
 import re
 from .Generator import Generator
 from .Component import Component
-from .. import utils
+from archon.completions import utils
 from loguru import logger
 from .prompts import make_unit_test_generator_prompt
 

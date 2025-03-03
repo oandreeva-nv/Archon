@@ -1,8 +1,8 @@
 from .Generator import Generator
 from .Component import Component
 from loguru import logger
-from .. import utils
-from .prompts import make_fuser_prompt
+from archon.completions import utils
+from prompts import make_fuser_prompt
 
 
 class Fuser(Component):

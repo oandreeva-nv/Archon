@@ -59,6 +59,9 @@ class Critic(Component):
     
         assert isinstance(conversation, list) and len(conversation) > 0
         assert isinstance(candidates, list) and len(candidates) > 0
+        print("--------------------------------")
+        print(candidates)
+        print("--------------------------------")
 
         query = conversation[-1]["content"]
         critic_prompt = make_critic_prompt(query, candidates)
@@ -79,6 +82,9 @@ class Critic(Component):
         for retry in range(10):
             try:
                 output = self.critic.generate_from_messages(messages, self.temperature)
+                print("----------Critic Output----------------------")
+                print(output)
+                print("------------     --------------------")
                 # breakpoint()
                 evaluations = self.parse_evaluation_output(output[0], candidates)
                 return evaluations

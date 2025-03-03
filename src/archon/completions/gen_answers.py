@@ -1,4 +1,4 @@
-from archon.completions.archon import Archon
+from archon.completions import Archon
 from loguru import logger
 from functools import partial
 import argparse
@@ -59,7 +59,7 @@ def main(args):
         debug_data=args.debug_data,
     )
     eval_set = benchmark.load_dataset()
-    print(eval_set)
+    #print(eval_set)
 
     results = []
     # run Archon on eval questions in parallel
