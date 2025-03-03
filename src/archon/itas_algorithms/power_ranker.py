@@ -14,6 +14,11 @@ from benchmarks.mt_bench.show_mt_bench_result import display_result_pairwise
 from benchmarks.arena_hard_auto.gen_judgment import generate_judgments, generate_pairwise_config
 from benchmarks.arena_hard_auto.show_arena_hard_auto_result import rank_model_performance
 from benchmarks.gsm8k.gsm8k_evaluation import evaluate_gsm8k_answers
+from benchmarks.code_contests.eval_code_contests import grade_problems
+from code_contests_utils import execution_server_client
+from benchmarks.code_contests.utils import load_yaml
+
+from benchmarks.mbpp.human_eval.evaluation import evaluate_functional_correctness
 
 # Needed for FastChat
 from dotenv import load_dotenv
@@ -29,7 +34,8 @@ def parse_model_name(model_path: str) -> str:
 QUESTION_MAP = {
     "arena_hard_auto": "archon/benchmarks/arena_hard_auto/arena_questions.jsonl",
     "mt_bench": "archon/benchmarks/mt_bench/FastChat/fastchat/llm_judge/data/mt_bench/question.jsonl",
-    "gsm8k": "/mnt/Code/Archon/src/archon/benchmarks/gsm8k/grade-school-math/grade_school_math/data/test_short.jsonl"
+    "gsm8k": "/mnt/Code/Archon/src/archon/benchmarks/gsm8k/grade-school-math/grade_school_math/data/test.jsonl",
+    "mbpp": "/mnt/Code/Archon/src/archon/benchmarks/mbpp/data/mbpp_short.jsonl"
 }
 
 
@@ -196,6 +202,30 @@ class PowerRanker:
         print(self.results)
         return self.results, self.model_to_score_dict
 
+    def compare_mbpp(self) -> tuple[list[str], dict[str, float]]:
+        model_name_list = [model["name"] for model in self.eval_models]
+        self.model_to_score_dict = dict()
+
+        for model in model_name_list:
+            answer_path = self.output_dir + "/mbpp/model_answer/" + model + ".json"
+            output_dir = Path(self.output_dir) / "mbpp/model_judgement" / model
+            
+            score = evaluate_functional_correctness(
+                input_file=answer_path,
+                tmp_dir=output_dir,
+                problem_file=self.benchmark["question_file"],
+                language="python",
+                is_mbpp=True
+            )
+            self.model_to_score_dict[model] = float(score["pass@1"])
+
+        # Sort by score value
+        self.results = sorted(self.model_to_score_dict.keys(),
+                             key=lambda x: float(self.model_to_score_dict[x]),
+                             reverse=True)
+
+        return self.results, self.model_to_score_dict
+
     def rank_models(self):
         if self.benchmark["name"] == "mt_bench":
             return self.compare_against_mt()
@@ -203,6 +233,8 @@ class PowerRanker:
             return self.compare_against_arena()
         if self.benchmark["name"] == "gsm8k":
             return self.compare_gsm8k()
+        if self.benchmark["name"] == "mbpp":
+            return self.compare_mbpp()
         logger.error(f"{self.benchmark['name']} is not supported")
 
 

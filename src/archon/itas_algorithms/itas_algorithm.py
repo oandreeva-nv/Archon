@@ -27,8 +27,9 @@ from benchmarks.benchmarks import BENCHMARK_CLASSES
 class ITAS:
     # TODO: Get this from the archon config
     MODEL_TO_API_DICT = {
+        "codellama": "OpenAI_API",
         "llama_1b": "OpenAI_API",
-        "llama_3B": "OpenAI_API",
+        "llama_3b": "OpenAI_API",
         "gpt-3.5-turbo-0125": "OpenAI_API",
         "gpt-4-0314": "OpenAI_API",
         "gpt-4-1106-preview": "OpenAI_API",
@@ -175,9 +176,14 @@ class ITAS:
             raise ValueError("Invalid benchmark type!")
 
     def calculate_total_inference_calls(self, archon_json):
-        return sum(
-            model["samples"] for layer in archon_json["layers"] for model in layer
-        )
+        total_samples = 0
+        for layer in archon_json["layers"]:
+            if isinstance(layer[0], list):
+                for sublayer in layer:
+                    total_samples += sum(model["samples"] for model in sublayer if "samples" in model)
+            else:
+                total_samples += sum(model["samples"] for model in layer if "samples" in model)
+        return total_samples
 
     def create_archon_config(self, archon_config_dict, save_path=None):
         archon_config = {"name": archon_config_dict["name"], "layers": []}
@@ -228,10 +234,8 @@ class ITAS:
         # Fuser and Critic Layers
         for fuser_layer_key in ["fuser_layer_1", "fuser_layer_2", "fuser_layer_3"]:
             if archon_config_dict[fuser_layer_key] > 0:
-                archon_config["layers"].append(
-                    add_critic_layer(archon_config_dict["critic_model"]),
-                    add_ranker_layer(archon_config_dict["ranker_model"], archon_config_dict["ranker_top_k"]),
-                )
+                archon_config["layers"].append(add_critic_layer(archon_config_dict["critic_model"]))
+                archon_config["layers"].append(add_ranker_layer(archon_config_dict["ranker_model"], archon_config_dict["ranker_top_k"]))
                 archon_config["layers"].append(
                     [
                         {

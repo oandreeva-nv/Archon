@@ -1,0 +1,1 @@
+{"name": "search_configs/model_configs/llama_3B.json", "layers": [[{"type": "generator", "model": "search_configs/model_configs/llama_3B.json", "model_type": "OpenAI_API", "temperature": 0.7, "max_tokens": 2048, "samples": 1}]], "save_path": "outputs/clas_algorithms/search_config_20250204-004716/configs/individual_model_configs/search_configs/model_configs/llama_3B.json"}

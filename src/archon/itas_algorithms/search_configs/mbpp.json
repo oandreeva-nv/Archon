@@ -1,0 +1,24 @@
+
+{
+    "model_top_k_choices": [1],
+    "sample_top_k_choices": [1, 2],
+    "fuser_layer_1_choices": [0],
+    "fuser_layer_2_choices": [0],
+    "fuser_layer_3_choices": [0],
+    "maximum_inference_calls": 20,
+    "models_available": ["/mnt/Code/Archon/src/archon/itas_algorithms/search_configs/model_configs/codellama.json"], 
+    
+    "base_output_directory": "/mnt/Code/Archon/outputs/clas_algorithms/",
+    "benchmark": "mbpp",
+    "judge_model": "/mnt/Code/Archon/src/archon/itas_algorithms/search_configs/model_configs/codellama.json",
+    "baseline_model": "/mnt/Code/Archon/src/archon/itas_algorithms/search_configs/model_configs/codellama.json",
+    "dataset_sample_for_power_ranking": 0.0125,
+    "dataset_sample_for_search": 0.0125,
+    "dataset_sample_for_final_ranking": 0.0125,
+    
+    "search_algorithm_choice": "bayesian_optimization", 
+    "number_of_archon_configs_for_final_ranking": 10,
+    "random_search_iterations": 10,
+    "init_points": 1,
+    "n_iter": 1
+}
