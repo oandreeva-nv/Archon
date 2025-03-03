@@ -8,12 +8,12 @@ def main():
     parser.add_argument("--answers-json-path", type=str, required=True, help="The path to the JSON file containing the GSM8k answers.")
     parser.add_argument("--language", type=str, default="python")
     args = parser.parse_args()
-    problem_file = os.path.join('mbpp/data', f"mbpp.jsonl")
+    problem_file = os.path.join('archon/benchmarks/mbpp/data', f"mbpp.jsonl")
     
     result = evaluate_functional_correctness(
         input_file=args.answers_json_path,
         tmp_dir='tmp',
-        problem_file=os.path.join('mbpp/data', f"mbpp_test.jsonl"),
+        problem_file=os.path.join('archon/benchmarks/mbpp/data', f"mbpp.jsonl"),
         language='python',
         is_mbpp=True
     )

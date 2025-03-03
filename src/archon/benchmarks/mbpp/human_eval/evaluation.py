@@ -116,7 +116,8 @@ def process_humaneval_test(sample, problems, example_test=False, is_mbpp=False, 
     """
     task_id = sample["task_id"]
     if is_mbpp:
-        return sample["generation"] + "\n" + "\n".join(problems[task_id]["test"])
+        #print(sample["generation"] + "\n" + "\n".join(problems[task_id]["test_list"]))
+        return sample["generation"] + "\n" + "\n".join(problems[task_id]["test_list"])
 
     #prompt = sample["prompt"]
     if example_test and "example_test" in problems[task_id] and problems[task_id]["example_test"] != "":
@@ -277,7 +278,8 @@ def evaluate_functional_correctness(
             results[result["task_id"]].append((result["completion_id"], result))
 
     # Calculate pass@k.
-    total, correct = [], []
+    print(results.keys())
+    total, correct, keys = [], [], []
     for result in results.values():
         passed = [r[1]["passed"] for r in result]
         total.append(len(passed))
@@ -289,6 +291,8 @@ def evaluate_functional_correctness(
         ks = k
         pass_at_k = {f"pass@{k}": estimate_pass_at_k(total, correct, k).mean()
                      for k in ks if (total >= k).all()}
+        print("Total:", total)
+        print("Correct:", correct)
         print(pass_at_k)
     else:
         print("Total:", np.sum(total))

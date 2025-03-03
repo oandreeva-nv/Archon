@@ -48,6 +48,8 @@ def check_correctness(
                 # Disable functionalities that can make destructive changes to the test.
                 reliability_guard()
 
+                print("executing: ", sample["test_code"])
+
                 try:
                     exec_globals = {}
                     with swallow_io():
@@ -75,6 +77,8 @@ def check_correctness(
                 shutil.rmtree = rmtree
                 os.rmdir = rmdir
                 os.chdir = chdir
+
+                print("Finished executing: ", result)
 
         elif "go" in language_type.lower():
             assert tmp_dir is not None, "Go should be evaluated in a dir where necessary module files installed."
