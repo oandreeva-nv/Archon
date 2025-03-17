@@ -614,7 +614,7 @@ class GSM8KBenchmark(Benchmark):
             self.dataset = datasets.Dataset.from_list(data)
 
         self.dataset = self.dataset.select(
-            range(3)#range(int(len(self.dataset) * self.dataset_sample))
+            range(int(len(self.dataset) * self.dataset_sample))
         )
 
         random.seed(0)
@@ -745,8 +745,9 @@ class MBPPBenchmark(Benchmark):
         self.lang = language
         self.temp_dir = temp_dir
         os.makedirs(temp_dir, exist_ok=True)
+        self.dataset_sample = dataset_sample
         self.save_type = "json"
-        problem_file = os.path.join("archon/benchmarks/mbpp/data", f"mbpp_short.jsonl")
+        problem_file = os.path.join("archon/benchmarks/mbpp/data", f"mbpp.jsonl")
 
         self.examples = list(self.read_test_examples(problem_file))
         print("Read {} examples for evaluation over.".format(len(self.examples)))
@@ -766,14 +767,14 @@ class MBPPBenchmark(Benchmark):
 
         # test_cases
         examples_str = []
-        for i in range(0, 1):
+        for i in range(1, 4):
             ex = examples[i]
             q, test, code = ex["text"], ex["test_list"], ex["code"]
             ex_prompt = format_test_example(q, test, code)
             example_prompt = "- Example {}:\n{}".format(i, ex_prompt)
             examples_str += [example_prompt]
 
-        for i in range(1, 6):
+        for i in range(4, 4 + int(len(examples)*self.dataset_sample)):
             ex = examples[i]
             q, test, code = ex["text"], ex["test_list"], ex["code"]
 
@@ -1046,7 +1047,7 @@ BENCHMARK_CLASSES = {
     "mix_eval": MixEvalBenchmark,
     "mix_eval_hard": MixEvalHardBenchmark,
     "code_contests": CodeContestsBenchmark,
-    "gsm8k": partial(GSM8KBenchmark, data_location="/mnt/Code/Archon/src/archon/benchmarks/gsm8k/grade-school-math/grade_school_math/data/test.jsonl"),
+    "gsm8k": partial(GSM8KBenchmark, data_location="archon/benchmarks/gsm8k/test.jsonl"),
     "human_eval": HumanEvalBenchmark,
     "mbpp": MBPPBenchmark,
     "math": MATHBenchmark,

@@ -8,8 +8,8 @@ import concurrent.futures
 import pydra
 import shutil
 
-from code_contests_utils import execution_server_client
-from utils import load_yaml, extract_first_code, EvaluateScriptConfig
+from .code_contests_utils import execution_server_client
+from .utils import load_yaml, extract_first_code, EvaluateScriptConfig
 
 MAX_CONCURRENT_REQUESTS = 512
 semaphore = threading.Semaphore(value=MAX_CONCURRENT_REQUESTS)

@@ -332,7 +332,6 @@ def generate_openai(model, messages, max_tokens=2048, temperature=0.7, **kwargs)
             logger.error(e)
             logger.info(f"Retry in {sleep_time}s..")
             time.sleep(sleep_time)
-
     output = output.strip()
 
     return output

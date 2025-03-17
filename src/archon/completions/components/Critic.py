@@ -107,6 +107,7 @@ class Critic(Component):
         """        
 
         assert isinstance(output, str) and len(output) > 0
+        output = re.sub(r'<think>.*?</think>', '', output, flags=re.DOTALL)
         output = (
             output.replace("\n\n\n\n", "\n\n").replace("\n\n", "\n").replace("---", "")
         )
@@ -135,7 +136,8 @@ class Critic(Component):
             print(
                 f"Problematic Evaluations Length: {len(evaluations)} != {len(candidates)} candidates. Evals were derived from {len(segments)} segments"
             )
-            print(f"")
+            for i, eval in enumerate(evaluations):
+                print(f"Evaluation {i+1}: {eval}")
             raise ValueError("Number of evaluations should match number of candidates")
 
         for i, eval in enumerate(evaluations):

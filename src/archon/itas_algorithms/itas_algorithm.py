@@ -27,6 +27,11 @@ from benchmarks.benchmarks import BENCHMARK_CLASSES
 class ITAS:
     # TODO: Get this from the archon config
     MODEL_TO_API_DICT = {
+        "deepseek_coder33": "OpenAI_API",
+        "llama70b": "OpenAI_API",
+        "qwen32b": "OpenAI_API",
+        "jamba_mini": "OpenAI_API",
+        "codellama34": "OpenAI_API",
         "codellama": "OpenAI_API",
         "llama_1b": "OpenAI_API",
         "llama_3b": "OpenAI_API",
@@ -81,7 +86,7 @@ class ITAS:
 
             # Make sure all the models available are in the power ranking
             for model in self.search_config["models_available"]:
-                assert model in model_power_ranking
+                assert model.split("/")[-1].split(".")[0] in model_power_ranking
         else:
 
             os.makedirs(
@@ -126,6 +131,7 @@ class ITAS:
                     baseline_path=self.search_config["baseline_model"],
                     model_list_paths=self.search_config["models_available"],
                     output_dir=self.search_config["save_directory"],
+                    dataset_sample=self.search_config["dataset_sample_for_power_ranking"]
                 )
                 ranker.gen_model_answers()
                 model_power_ranking, _ = ranker.rank_models()
@@ -135,7 +141,7 @@ class ITAS:
             # Remove baseline model from ranking list if it is not in the models available
             if (
                 self.search_config["baseline_model"]
-                not in self.search_config["models_available"]
+                in self.search_config["models_available"]
             ):
                 model_power_ranking.remove(
                     parse_model_name(self.search_config["baseline_model"])
@@ -592,6 +598,32 @@ class ITAS:
             )
         )
 
+    def run_final_ranking(self, archon_save_paths):
+        """Run final ranking on a list of provided archon config paths."""
+        archon_save_path_to_score_complete_dataset = {}
+        for archon_config_path in archon_save_paths:
+            # Create new unique configs for final ranking
+            with open(archon_config_path, "r") as file:
+                archon_json = json.load(file)
+
+            archon_json["name"] = archon_json["name"] + "_final_ranking"
+            archon_json["save_path"] = archon_json["save_path"].replace(
+                ".json", "_final_ranking.json"
+            )
+
+            with open(archon_json["save_path"], "w") as file:
+                json.dump(archon_json, file)
+
+            _, model_to_score_dict = self.run_benchmark(
+                archon_json, self.search_config["dataset_sample_for_final_ranking"]
+            )
+            archon_save_path_to_score_complete_dataset[archon_json["save_path"]] = list(
+                model_to_score_dict.values()
+            )[0]
+
+        self.display_itas_results(archon_save_path_to_score_complete_dataset)
+        return archon_save_path_to_score_complete_dataset
+
     def itas_algorithm(self):
         print("perform_search")
         archon_save_path_to_score = self.perform_search()
@@ -647,6 +679,17 @@ def main():
         required=True,
         help="Path to the JSON file containing the search configuration.",
     )
+    parser.add_argument(
+        "--final-ranking-only",
+        action="store_true",
+        help="Run only the final ranking on existing configs"
+    )
+    parser.add_argument(
+        "--config-paths",
+        nargs="+",
+        help="List of archon config paths to run final ranking on",
+        default=[]
+    )
 
     args = parser.parse_args()
 
@@ -654,8 +697,11 @@ def main():
     search_config = load_search_config(args.search_config)
 
     # Update search_config_name to include the current timestamp
-    search_config_name = "search_config_" + datetime.now().strftime("%Y%m%d-%H%M%S")
-    search_config["search_config_name"] = search_config_name
+    if "search_config_name" not in search_config:
+        search_config_name = "search_config_" + datetime.now().strftime("%Y%m%d-%H%M%S")
+        search_config["search_config_name"] = search_config_name
+    else:
+        search_config_name = search_config["search_config_name"]
 
     # Update paths in the search_config to include the search_config_name
     base_output_path = os.path.join(
@@ -676,7 +722,14 @@ def main():
 
     # Initialize and run the itas algorithm
     itas = ITAS(search_config=search_config, general_model_config=general_model_config)
-    itas.itas_algorithm()
+
+    if args.final_ranking_only:
+        print("Running final ranking only")
+        if not args.config_paths:
+            raise ValueError("Must provide config paths when running final ranking only")
+        itas.run_final_ranking(args.config_paths)
+    else:
+        itas.itas_algorithm()
 
 
 if __name__ == "__main__":

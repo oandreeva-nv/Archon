@@ -15,7 +15,7 @@ from benchmarks.arena_hard_auto.gen_judgment import generate_judgments, generate
 from benchmarks.arena_hard_auto.show_arena_hard_auto_result import rank_model_performance
 from benchmarks.gsm8k.gsm8k_evaluation import evaluate_gsm8k_answers
 from benchmarks.code_contests.eval_code_contests import grade_problems
-from code_contests_utils import execution_server_client
+from benchmarks.code_contests.code_contests_utils import execution_server_client
 from benchmarks.code_contests.utils import load_yaml
 
 from benchmarks.mbpp.human_eval.evaluation import evaluate_functional_correctness
@@ -34,8 +34,8 @@ def parse_model_name(model_path: str) -> str:
 QUESTION_MAP = {
     "arena_hard_auto": "archon/benchmarks/arena_hard_auto/arena_questions.jsonl",
     "mt_bench": "archon/benchmarks/mt_bench/FastChat/fastchat/llm_judge/data/mt_bench/question.jsonl",
-    "gsm8k": "/mnt/Code/Archon/src/archon/benchmarks/gsm8k/grade-school-math/grade_school_math/data/test.jsonl",
-    "mbpp": "/mnt/Code/Archon/src/archon/benchmarks/mbpp/data/mbpp_short.jsonl"
+    "gsm8k": "/home/oandreeva/Archon/src/archon/benchmarks/gsm8k/test.jsonl",
+    "mbpp": "/home/oandreeva/Archon/src/archon/benchmarks/mbpp/data/mbpp.jsonl"
 }
 
 
@@ -155,6 +155,8 @@ class PowerRanker:
 
         for model in model_name_list:
             answer_path = self.output_dir + "/gsm8k/model_answer/" + model + ".json"
+            print(answer_path)
+            #answer_path = "/home/oandreeva/itas_outputs/search_config_20250311-214326/model_generations/gsm8k/model_answer/" + model + ".json"
             score = evaluate_gsm8k_answers(answer_path)["accuracy"]
             # Make sure score is a float value
             self.model_to_score_dict[model] = float(score)
