@@ -1,0 +1,7 @@
+{
+    "model":"/home/oandreeva/codellama34",
+    "disable_log_requests": true,
+    "tensor_parallel_size": 1,
+    "enforce_eager": true,
+    "max_model_len": 10000
+}

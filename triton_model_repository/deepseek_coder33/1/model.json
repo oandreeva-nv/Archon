@@ -1,0 +1,7 @@
+{
+    "model":"/data500gb/deepseek-coder33b",
+    "disable_log_requests": true,
+    "tensor_parallel_size": 1,
+    "enforce_eager": true,
+    "max_model_len": 10000
+}
