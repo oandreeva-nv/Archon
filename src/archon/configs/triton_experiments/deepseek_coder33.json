@@ -1,0 +1,16 @@
+{
+    "name": "deepseek_coder33",
+    "layers": [
+        [
+            {
+                "type": "generator",
+                "model": "deepseek_coder33",
+                "model_type": "OpenAI_API",
+                "top_k": 1,
+                "temperature": 0.7,
+                "max_tokens": 2048,
+                "samples": 1
+            }
+        ]
+    ]
+}

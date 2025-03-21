@@ -1,0 +1,42 @@
+<frozen runpy>:128: RuntimeWarning: 'archon.itas_algorithms.itas_algorithm' found in sys.modules after import of package 'archon.itas_algorithms', but prior to execution of 'archon.itas_algorithms.itas_algorithm'; this may result in unpredictable behaviour
+2025-03-11 18:52:57.554 | INFO     | completions.archon:initialize_layer:80 - Initialized layer with 1 components
+2025-03-11 18:52:57.555 | INFO     | completions.archon:initialize_layer:80 - Initialized layer with 1 components
+2025-03-11 18:52:57.560 | INFO     | completions.archon:initialize_layer:80 - Initialized layer with 1 components
+2025-03-11 18:52:57.567 | INFO     | completions.archon:initialize_layer:80 - Initialized layer with 1 components
+2025-03-11 18:52:57.572 | INFO     | completions.archon:initialize_layer:80 - Initialized layer with 1 components
+2025-03-11 18:52:57.573 | INFO     | completions.gen_answers:main:30 - Start.
+2025-03-11 18:52:57.573 | INFO     | completions.gen_answers:main:36 - loading: archon/configs/triton_experiments/qwen32b.json
+2025-03-11 18:52:57.574 | INFO     | archon.completions.archon:initialize_layer:80 - Initialized layer with 1 components
+2025-03-11 18:52:57.575 | INFO     | completions.gen_answers:main:54 - Finished initializing archon
+Created Archon config for archon/configs/triton_experiments/qwen32b.json, saved to: /home/oandreeva/itas_outputs/search_config_20250311-185257/configs/individual_model_configs/search_run_search_config_20250311-185257_model_top_k_1_sample_top_k_1_fuser_layer_1_0_fuser_layer_2_0_fuser_layer_3_0.json
+Created Archon config for archon/configs/triton_experiments/deepseek_coder33.json, saved to: /home/oandreeva/itas_outputs/search_config_20250311-185257/configs/individual_model_configs/search_run_search_config_20250311-185257_model_top_k_1_sample_top_k_1_fuser_layer_1_0_fuser_layer_2_0_fuser_layer_3_0.json
+Created Archon config for archon/configs/triton_experiments/codellama34.json, saved to: /home/oandreeva/itas_outputs/search_config_20250311-185257/configs/individual_model_configs/search_run_search_config_20250311-185257_model_top_k_1_sample_top_k_1_fuser_layer_1_0_fuser_layer_2_0_fuser_layer_3_0.json
+Created Archon config for archon/configs/triton_experiments/llama70b.json, saved to: /home/oandreeva/itas_outputs/search_config_20250311-185257/configs/individual_model_configs/search_run_search_config_20250311-185257_model_top_k_1_sample_top_k_1_fuser_layer_1_0_fuser_layer_2_0_fuser_layer_3_0.json
+[{'type': 'generator', 'model': 'llama70b', 'model_type': 'OpenAI_API', 'top_k': 1, 'temperature': 0.7, 'max_tokens': 2048, 'samples': 1}]
+{'type': 'generator', 'model': 'llama70b', 'model_type': 'OpenAI_API', 'top_k': 1, 'temperature': 0.7, 'max_tokens': 2048, 'samples': 1}
+Model initialized: llama70b
+Archon initialized with 1 layers.
+[{'type': 'generator', 'model': 'llama70b', 'model_type': 'OpenAI_API', 'top_k': 1, 'temperature': 0.7, 'max_tokens': 2048, 'samples': 1}]
+{'type': 'generator', 'model': 'llama70b', 'model_type': 'OpenAI_API', 'top_k': 1, 'temperature': 0.7, 'max_tokens': 2048, 'samples': 1}
+Model initialized: llama70b
+Archon initialized with 1 layers.
+[{'type': 'generator', 'model': 'qwen32b', 'model_type': 'OpenAI_API', 'top_k': 1, 'temperature': 0.7, 'max_tokens': 2048, 'samples': 1}]
+{'type': 'generator', 'model': 'qwen32b', 'model_type': 'OpenAI_API', 'top_k': 1, 'temperature': 0.7, 'max_tokens': 2048, 'samples': 1}
+Model initialized: qwen32b
+Archon initialized with 1 layers.
+[{'type': 'generator', 'model': 'deepseek_coder33', 'model_type': 'OpenAI_API', 'top_k': 1, 'temperature': 0.7, 'max_tokens': 2048, 'samples': 1}]
+{'type': 'generator', 'model': 'deepseek_coder33', 'model_type': 'OpenAI_API', 'top_k': 1, 'temperature': 0.7, 'max_tokens': 2048, 'samples': 1}
+Model initialized: deepseek_coder33
+Archon initialized with 1 layers.
+[{'type': 'generator', 'model': 'codellama34', 'model_type': 'OpenAI_API', 'top_k': 1, 'temperature': 0.7, 'max_tokens': 2048, 'samples': 1}]
+{'type': 'generator', 'model': 'codellama34', 'model_type': 'OpenAI_API', 'top_k': 1, 'temperature': 0.7, 'max_tokens': 2048, 'samples': 1}
+Model initialized: codellama34
+Archon initialized with 1 layers.
+{'benchmark': 'gsm8k', 'dataset_sample': 1.0, 'config': 'archon/configs/triton_experiments/qwen32b.json', 'output_dir': '/home/oandreeva/itas_outputs/search_config_20250311-185257/model_generations', 'parallel': 16, 'debug_data': False, 'debug': False, 'debug_verifier': False, 'debug_archon': False, 'append': False, 'debug_unit_test_generator': False, 'samples': 1}
+[{'type': 'generator', 'model': 'qwen32b', 'model_type': 'OpenAI_API', 'top_k': 1, 'temperature': 0.7, 'max_tokens': 2048, 'samples': 1}]
+{'type': 'generator', 'model': 'qwen32b', 'model_type': 'OpenAI_API', 'top_k': 1, 'temperature': 0.7, 'max_tokens': 2048, 'samples': 1}
+Model initialized: qwen32b
+Archon initialized with 1 layers.
+Loading dataset from file
+Total number of items to process: 1319
+  0%|          | 0/1319 [00:00<?, ?it/s]  0%|          | 1/1319 [00:25<9:11:40, 25.11s/it]  0%|          | 3/1319 [02:12<16:57:35, 46.39s/it]  2%|▏         | 31/1319 [02:31<1:16:33,  3.57s/it]  2%|▏         | 32/1319 [02:37<1:18:44,  3.67s/it]  3%|▎         | 36/1319 [02:38<1:02:57,  2.94s/it]  3%|▎         | 38/1319 [03:19<1:51:14,  5.21s/it]  3%|▎         | 39/1319 [03:47<2:32:19,  7.14s/it]  3%|▎         | 40/1319 [04:00<2:46:31,  7.81s/it]  3%|▎         | 41/1319 [04:05<2:37:29,  7.39s/it]  4%|▍         | 58/1319 [04:12<43:11,  2.06s/it]    4%|▍         | 59/1319 [04:13<41:29,  1.98s/it]  5%|▍         | 61/1319 [05:05<1:55:45,  5.52s/it]  5%|▍         | 63/1319 [05:24<2:11:00,  6.26s/it]  6%|▌         | 74/1319 [06:02<1:36:05,  4.63s/it]  6%|▌         | 79/1319 [06:29<1:39:58,  4.84s/it]  7%|▋         | 87/1319 [07:15<1:46:37,  5.19s/it]  7%|▋         | 88/1319 [07:23<1:49:35,  5.34s/it]  7%|▋         | 94/1319 [07:39<1:29:29,  4.38s/it]  8%|▊         | 101/1319 [07:58<1:16:47,  3.78s/it]  8%|▊         | 111/1319 [08:07<51:12,  2.54s/it]    9%|▊         | 115/1319 [08:36<1:09:53,  3.48s/it]  9%|▉         | 117/1319 [08:37<1:02:23,  3.11s/it]  9%|▉         | 120/1319 [09:38<2:14:43,  6.74s/it]  9%|▉         | 123/1319 [09:48<1:58:35,  5.95s/it] 11%|█         | 139/1319 [10:02<53:22,  2.71s/it]   11%|█         | 140/1319 [10:34<1:24:21,  4.29s/it] 11%|█         | 148/1319 [10:35<52:32,  2.69s/it]   11%|█▏        | 151/1319 [10:57<1:08:05,  3.50s/it] 12%|█▏        | 154/1319 [11:49<2:00:04,  6.18s/it] 12%|█▏        | 158/1319 [11:55<1:35:23,  4.93s/it] 13%|█▎        | 173/1319 [12:20<56:51,  2.98s/it]  
